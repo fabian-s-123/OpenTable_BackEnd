@@ -1,7 +1,7 @@
 package at.opentable.api;
 
-import at.opentable.controller.CustomerController;
-import at.opentable.entity.Customer;
+import at.opentable.controller.ReviewController;
+import at.opentable.entity.Review;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,15 +11,15 @@ import java.util.Optional;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/api/customers")
-public class CustomerApi {
+@RequestMapping(path = "/api/reviews")
+public class ReviewApi {
 
     @Autowired
-    private CustomerController customerController;
+    private ReviewController reviewController;
 
     @PostMapping
-    public ResponseEntity createCustomer(@RequestBody Customer customer) {
-        boolean success = this.customerController.createCustomer(customer);
+    public ResponseEntity createReview(@RequestBody Review review) {
+        boolean success = this.reviewController.createReview(review);
         if (success) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -27,18 +27,18 @@ public class CustomerApi {
     }
 
     @GetMapping
-    public Iterable<Customer> findAll() {
-        return this.customerController.findAll();
+    public Iterable<Review> findAll() {
+        return this.reviewController.findAll();
     }
 
     @GetMapping(path = "/{id}")
-    public Optional<Customer> getCustomer(@PathVariable int id) {
-        return this.customerController.getCustomer(id);
+    public Optional<Review> getReview(@PathVariable int id) {
+        return this.reviewController.getReview(id);
     }
 
     @PutMapping
-    public ResponseEntity updateCustomer(@RequestBody Customer customer) {
-        boolean success = this.customerController.updateCustomer(customer);
+    public ResponseEntity updateReview(@RequestBody Review review) {
+        boolean success = this.reviewController.updateReview(review);
         if (success) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -46,8 +46,8 @@ public class CustomerApi {
     }
 
     @DeleteMapping
-    public ResponseEntity deleteCustomer(@RequestBody Customer customer) {
-        boolean success = this.customerController.deleteCustomer(customer);
+    public ResponseEntity deleteReview(@RequestBody Review review) {
+        boolean success = this.reviewController.deleteReview(review);
         if (success) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -55,8 +55,8 @@ public class CustomerApi {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity deleteCustomerById(@PathVariable int id) {
-        boolean success = this.customerController.deleteCustomerById(id);
+    public ResponseEntity deleteReviewById(@PathVariable int id) {
+        boolean success = this.reviewController.deleteReviewById(id);
         if (success) {
             return new ResponseEntity<>(HttpStatus.OK);
         }

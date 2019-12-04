@@ -20,7 +20,7 @@ public class Review {
     private Customer customer;
 
     @OneToOne
-        @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
     private Restaurant restaurant;
 
 
@@ -51,7 +51,7 @@ public class Review {
     public void setComment(String comment) {
         this.comment = comment;
     }
-/*
+
 
     public Customer getCustomer() {
         return customer;
@@ -68,7 +68,6 @@ public class Review {
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
     }
-*/
 
     public Date getDate() {
         return date;
