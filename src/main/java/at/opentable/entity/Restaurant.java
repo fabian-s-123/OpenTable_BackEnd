@@ -34,7 +34,7 @@ public class Restaurant {
     @Column(nullable = false)
     private String website;
 
-    @Column(name = "social_media", nullable = false)
+    @Column(name = "social_media")
     private String socialMedia;
 
     private String description;
