@@ -46,12 +46,13 @@ public class Restaurant {
     private String openingHours;
 
     private String menu;
-    @OneToMany
-    @JoinColumn(name = "teburu_ids", referencedColumnName = "id", nullable = false)
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "teburu_ids")
     private List<Teburu> teburu;
 
-    @OneToMany
-    @JoinColumn(name = "tags", referencedColumnName = "id", nullable = false)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "tags")
     private List<Tag> tagList;
 
     public int getId() {

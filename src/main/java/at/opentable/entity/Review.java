@@ -20,7 +20,7 @@ public class Review {
     private Customer customer;
 
     @OneToOne
-    @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
+        @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
     private Restaurant restaurant;
 
 
