@@ -7,7 +7,7 @@ import java.util.List;
 public class Restaurant {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(nullable = false)
@@ -46,13 +46,10 @@ public class Restaurant {
     private String openingHours;
 
     private String menu;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "teburu_ids")
     private List<Teburu> teburu;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "tags")
     private List<Tag> tagList;
 
     public int getId() {
