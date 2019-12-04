@@ -34,7 +34,7 @@ public class Restaurant {
     @Column(nullable = false)
     private String website;
 
-    @Column(name = "social_media", nullable = false)
+    @Column(name = "social_media")
     private String socialMedia;
 
     private String description;
@@ -49,7 +49,7 @@ public class Restaurant {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Teburu> teburu;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Tag> tagList;
 
     public int getId() {
