@@ -69,7 +69,6 @@ public class Review {
         this.restaurant = restaurant;
     }
 
-
     public Date getDate() {
         return date;
     }
