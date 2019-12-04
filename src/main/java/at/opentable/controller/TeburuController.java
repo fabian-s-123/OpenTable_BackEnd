@@ -1,5 +1,6 @@
 package at.opentable.controller;
 
+import at.opentable.entity.Restaurant;
 import at.opentable.entity.Teburu;
 import at.opentable.repository.TeburuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,4 +35,11 @@ public class TeburuController {
         return teburuRepository.findAll();
     }
 
+    public boolean deleteTeburu(int id) {
+        Optional<Teburu> optionalTeburu = getTeburu(id);
+        if (optionalTeburu.isPresent()) {
+            teburuRepository.deleteById(id);
+            return true;
+        } else return false;
+    }
 }
