@@ -15,11 +15,11 @@ public class Reservation {
     private Teburu teburu;
 
     @Column(name = "start_date_time", nullable = false)
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date startDateTime;
 
     @Column(name = "end_date_time", nullable = false)
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date endDateTime;
 
     @OneToOne
