@@ -12,25 +12,35 @@ import org.springframework.stereotype.Controller;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Repository;
+
 import java.security.Key;
 import java.util.Optional;
 
 @Controller
 public class AuthorizationController {
-    private Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256)
+    private Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     @Autowired
     ModelMapper modelMapper;
     @Autowired
     CustomerRespository customerRespository;
 
     public ResponseEntity login(AuthenticationDTO authenticationDTO) {
-        // todo: AuthorizedCustomerDTO currentCustomer; ???
-        Optional<Customer> customer = customerRespository.findByEmail(authenticationDTO.getEmail());
+        AuthorizedCustomerDTO currentCustomer = new AuthorizedCustomerDTO();
+
+        Optional<Customer> customer = customerRespository.FindByEmail(authenticationDTO.getEmail());
+        System.out.println(customer);
         if(customer.isPresent()) {
             if(authenticationDTO.getPassword().equals(customer.get().getPassword())) {
-                String jws = Jwts.builder().setSubject(customer.get().getEmail()).signWith(key).compact();
-                // todo: customer.setJws(jws);
-                return new ResponseEntity(modelMapper.map(customer.get(), AuthorizedCustomerDTO.class), HttpStatus.OK);
+                currentCustomer.setId(customer.get().getId());
+                currentCustomer.setEmail(customer.get().getEmail());
+                currentCustomer.setFirstName(customer.get().getFirstName());
+                currentCustomer.setLastName(customer.get().getLastName());
+                currentCustomer.setTelephone(customer.get().getTelephone());
+
+                String jws = Jwts.builder().setSubject(currentCustomer.getEmail()).signWith(key).compact();
+                currentCustomer.setJws(jws);
+                return new ResponseEntity(modelMapper.map(currentCustomer, AuthorizedCustomerDTO.class), HttpStatus.OK);
             }
         }
 
