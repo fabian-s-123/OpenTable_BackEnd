@@ -1,4 +1,4 @@
-package at.opentable.Repository;
+package at.opentable.repository;
 
 import at.opentable.entity.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +11,7 @@ public interface ReservationRepository extends JpaRepository<Reservation,Integer
 
     public Reservation findByCustomerId(int id);
 
-    //public Reservation findByRestaurantDate(Date restaurantDate);
+    public Reservation findByRestaurantDate(Date restaurantDate);
 
     public Reservation findByCustomerDate(Date customerDate);
 
