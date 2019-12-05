@@ -1,6 +1,6 @@
 package at.opentable.controller;
 
-import at.opentable.Repository.ReservationRepository;
+import at.opentable.repository.ReservationRepository;
 import at.opentable.entity.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,8 +33,14 @@ public class ReservationController {
 
     public boolean updateReservation(Reservation reservation)
     {
-        
+        this.reservationRepository.saveAndFlush(reservation);
+        System.out.println("Successfully Reservation update");
+        return true;
     }
+
+
+
+
 
 
 
