@@ -1,7 +1,7 @@
 package at.opentable.controller;
 
 import at.opentable.entity.Customer;
-import at.opentable.repository.CustomerRepository;
+import at.opentable.Repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
