@@ -14,7 +14,11 @@ import java.util.Optional;
 public class RestaurantApi {
 
     @Autowired
+<<<<<<< HEAD
     private RestaurantController restaurantController;
+=======
+    RestaurantController restaurantController;
+>>>>>>> af7c6081b295504781ef6e171882178530102db1
 
     @PostMapping("/restaurants")
     public void createRestaurant(@RequestBody Restaurant restaurant) {
@@ -42,4 +46,10 @@ public class RestaurantApi {
             return new ResponseEntity<>(HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
+<<<<<<< HEAD
 }
+=======
+}
+
+
+>>>>>>> af7c6081b295504781ef6e171882178530102db1

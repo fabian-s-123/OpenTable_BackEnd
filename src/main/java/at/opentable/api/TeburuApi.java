@@ -9,13 +9,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+<<<<<<< HEAD
 @CrossOrigin
+=======
+>>>>>>> af7c6081b295504781ef6e171882178530102db1
 @RestController
 @RequestMapping(path = "/api")
 public class TeburuApi {
 
     @Autowired
+<<<<<<< HEAD
     private TeburuController teburuController;
+=======
+    TeburuController teburuController;
+>>>>>>> af7c6081b295504781ef6e171882178530102db1
 
     @PostMapping("/teburus")
     public void createTeburu(@RequestBody Teburu teburu) {
@@ -43,4 +50,8 @@ public class TeburuApi {
             return new ResponseEntity<>(HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> af7c6081b295504781ef6e171882178530102db1

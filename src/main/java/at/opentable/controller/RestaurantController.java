@@ -11,7 +11,11 @@ import java.util.Optional;
 public class RestaurantController {
 
     @Autowired
+<<<<<<< HEAD
     private RestaurantRepository restaurantRepository;
+=======
+    RestaurantRepository restaurantRepository;
+>>>>>>> af7c6081b295504781ef6e171882178530102db1
 
     public void createRestaurant(Restaurant restaurant) {
         restaurantRepository.save(restaurant);
@@ -41,4 +45,8 @@ public class RestaurantController {
             return true;
         } else return false;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> af7c6081b295504781ef6e171882178530102db1
