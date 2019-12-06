@@ -10,4 +10,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 
     @Query(value = "SELECT * FROM reservation WHERE start_date_time >= ?1 AND end_date_time < ?2 AND table_id = ?3", nativeQuery = true)
     Reservation checkReservationRepo (Timestamp timeStart, Timestamp timeEnd, int tableId);
+
+    @Query(value="SELECT * FROM reservation WHERE id = ?1",nativeQuery = true)
+    Reservation findByCustomerId(int id);
+
 }
