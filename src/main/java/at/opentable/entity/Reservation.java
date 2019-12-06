@@ -1,7 +1,9 @@
 package at.opentable.entity;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Optional;
 
 @Entity
 public class Reservation {
@@ -15,12 +17,12 @@ public class Reservation {
     private Teburu teburu;
 
     @Column(name = "start_date_time", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date startDateTime;
+    //@Temporal(TemporalType.TIMESTAMP)
+    private Timestamp startDateTime;
 
     @Column(name = "end_date_time", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date endDateTime;
+    //@Temporal(TemporalType.TIMESTAMP)
+    private Timestamp endDateTime;
 
     @OneToOne
     @JoinColumn(name = "customer_id")
@@ -28,6 +30,20 @@ public class Reservation {
 
     @Column(name = "group_size", nullable = false)
     private int groupSize;
+
+    public Reservation () {
+    }
+
+    public Reservation(Teburu teburu, Timestamp startDateTime, Timestamp endDateTime, Customer customer, int groupSize) {
+        this.teburu = teburu;
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.customer = customer;
+        this.groupSize = groupSize;
+    }
+
+    public Reservation(int id, Optional<Teburu> teburu, Timestamp time, Timestamp endTime, Optional<Customer> customer, int groupSize) {
+    }
 
     public int getId() {
         return id;
@@ -45,19 +61,19 @@ public class Reservation {
         this.teburu = teburu;
     }
 
-    public Date getStartDateTime() {
+    public Timestamp getStartDateTime() {
         return startDateTime;
     }
 
-    public void setStartDateTime(Date startDateTime) {
+    public void setStartDateTime(Timestamp startDateTime) {
         this.startDateTime = startDateTime;
     }
 
-    public Date getEndDateTime() {
+    public Timestamp getEndDateTime() {
         return endDateTime;
     }
 
-    public void setEndDateTime(Date endDateTime) {
+    public void setEndDateTime(Timestamp endDateTime) {
         this.endDateTime = endDateTime;
     }
 

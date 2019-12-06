@@ -32,7 +32,7 @@ public class ReviewApi {
     }
 
     @GetMapping(path = "/{id}")
-    public Optional<Review> getReview(@PathVariable int id) {
+    public Optional<Review> getReview(@PathVariable int id, String comment) {
         return this.reviewController.getReview(id);
     }
 
