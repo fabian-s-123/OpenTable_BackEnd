@@ -1,9 +1,5 @@
 package at.opentable.controller;
 
-<<<<<<< HEAD
-=======
-import at.opentable.entity.Restaurant;
->>>>>>> af7c6081b295504781ef6e171882178530102db1
 import at.opentable.entity.Teburu;
 import at.opentable.repository.TeburuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +11,7 @@ import java.util.Optional;
 public class TeburuController {
 
     @Autowired
-<<<<<<< HEAD
     private TeburuRepository teburuRepository;
-=======
-    TeburuRepository teburuRepository;
->>>>>>> af7c6081b295504781ef6e171882178530102db1
 
     public void createTeburu(Teburu teburu) {
         teburuRepository.save(teburu);
@@ -38,7 +30,6 @@ public class TeburuController {
         return Optional.of(teburuRepository.findById(id));
     }
 
-<<<<<<< HEAD
 
     /**
      * hacky, potential removal
@@ -49,9 +40,6 @@ public class TeburuController {
         return this.teburuRepository.findTeburuNoOptional(id);
     }
 
-
-=======
->>>>>>> af7c6081b295504781ef6e171882178530102db1
     public Iterable<Teburu> findAll() {
         return teburuRepository.findAll();
     }
@@ -63,7 +51,6 @@ public class TeburuController {
             return true;
         } else return false;
     }
-<<<<<<< HEAD
 
 
     /**
@@ -76,6 +63,4 @@ public class TeburuController {
         return this.teburuRepository.findAllTeburuByRestaurantIdRepo(restaurantId);
     }
 }
-=======
-}
->>>>>>> af7c6081b295504781ef6e171882178530102db1
+
