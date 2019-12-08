@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Repository;
 
 import java.security.Key;
 import java.util.Optional;
@@ -28,7 +27,7 @@ public class AuthorizationController {
     public ResponseEntity login(AuthenticationDTO authenticationDTO) {
         AuthorizedCustomerDTO currentCustomer = new AuthorizedCustomerDTO();
 
-        Optional<Customer> customer = customerRespository.FindByEmail(authenticationDTO.getEmail());
+        Optional<Customer> customer = customerRespository.findByEmail(authenticationDTO.getEmail());
         System.out.println(customer);
         if(customer.isPresent()) {
             if(authenticationDTO.getPassword().equals(customer.get().getPassword())) {
@@ -40,7 +39,7 @@ public class AuthorizationController {
 
                 String jws = Jwts.builder().setSubject(currentCustomer.getEmail()).signWith(key).compact();
                 currentCustomer.setJws(jws);
-                return new ResponseEntity(modelMapper.map(currentCustomer, AuthorizedCustomerDTO.class), HttpStatus.OK);
+                return new ResponseEntity(modelMapper.map(currentCustomer.getJws(), AuthorizedCustomerDTO.class), HttpStatus.OK);
             }
         }
 
