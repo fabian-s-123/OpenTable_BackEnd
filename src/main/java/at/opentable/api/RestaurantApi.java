@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/api")
 public class RestaurantApi {
@@ -37,6 +39,12 @@ public class RestaurantApi {
     }
 
     @GetMapping("/restaurants/name={name}")
+    public List<Restaurant> findRestaurantByName(@PathVariable String name) {return restaurantController.findRestaurantByName(name);}
+
+    @GetMapping("/restaurants/city={city}/zip={zip}")
+    public List<Restaurant> findRestaurantByCityOrZip(@PathVariable String city, @PathVariable String zip) {
+        return restaurantController.findRestaurantByCityOrZip(city, zip);
+    }
 
     @DeleteMapping("/restaurants/{id}")
     public ResponseEntity deleteRestaurant(@PathVariable int id) {

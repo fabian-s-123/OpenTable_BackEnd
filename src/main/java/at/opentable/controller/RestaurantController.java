@@ -5,6 +5,7 @@ import at.opentable.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -34,7 +35,9 @@ public class RestaurantController {
         return restaurantRepository.findAll();
     }
 
-    public Optional<Restaurant> findRestaurantByName(String name) {return restaurantRepository.findOrderByName(name);}
+    public List<Restaurant> findRestaurantByName(String name) {return restaurantRepository.findByNameContaining(name);}
+
+    public List<Restaurant> findRestaurantByCityOrZip(String city, String zip) {return restaurantRepository.findByCityIgnoreCaseContainingOrZipIgnoreCaseContaining(city, zip);}
 
     public boolean deleteRestaurant(int id) {
         Optional<Restaurant> optionalRestaurant = getRestaurant(id);
