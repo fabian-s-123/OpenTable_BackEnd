@@ -28,7 +28,7 @@ public class AuthorizationController {
         AuthorizedCustomerDTO currentCustomer = new AuthorizedCustomerDTO();
 
         Optional<Customer> customer = customerRespository.findByEmail(authenticationDTO.getEmail());
-        System.out.println(customer);
+
         if(customer.isPresent()) {
             if(authenticationDTO.getPassword().equals(customer.get().getPassword())) {
                 currentCustomer.setId(customer.get().getId());
@@ -39,10 +39,9 @@ public class AuthorizationController {
 
                 String jws = Jwts.builder().setSubject(currentCustomer.getEmail()).signWith(key).compact();
                 currentCustomer.setJws(jws);
-                return new ResponseEntity(modelMapper.map(currentCustomer.getJws(), AuthorizedCustomerDTO.class), HttpStatus.OK);
+                return new ResponseEntity(modelMapper.map(currentCustomer, AuthorizedCustomerDTO.class), HttpStatus.OK);
             }
         }
-
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
