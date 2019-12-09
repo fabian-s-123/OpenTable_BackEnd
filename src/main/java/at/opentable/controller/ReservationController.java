@@ -1,5 +1,6 @@
 package at.opentable.controller;
 
+import at.opentable.dto.CustomerReservationDTO;
 import at.opentable.entity.Reservation;
 import at.opentable.entity.Teburu;
 import at.opentable.repository.ReservationRepository;
@@ -7,9 +8,7 @@ import at.opentable.repository.TeburuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,18 +37,16 @@ public class ReservationController {
 
 
     /**
-     * Standard save function if TeburuIdForReservation returns true.
+     * Standard save function if teburuIdForReservation returns true.
      *
-     * @param time marks reservation starting time as Timestamp
-     * @param restaurantId
-     * @param customerId
-     * @param groupSize
-     * @return boolean if creation was successful
+     * @param customerReservationDTO body is required for translating this object into a Reservation
+     * @return boolean if creating a Reservation was successful
      */
-    public boolean createReservation(Reservation reservation) {
-        Integer teburuId = this.teburuIdForReservation(reservation.getStartDateTime(), reservation.getTeburu().getId(), reservation.getGroupSize());
+    public boolean createCustomerReservation(CustomerReservationDTO customerReservationDTO) {
+        Timestamp endTime = this.getEndTime(customerReservationDTO.getStartDateTime());
+        Integer teburuId = this.teburuIdForReservation(endTime, customerReservationDTO.getRestaurantId(), customerReservationDTO.getGroupSize());
         if (!(teburuId == 0)) {
-            Reservation reservationTemp = new Reservation(this.teburuController.getTeburu2(teburuId), reservation.getStartDateTime(), this.getEndTime(reservation.getStartDateTime()), reservation.getCustomer(), reservation.getGroupSize());
+            Reservation reservationTemp = new Reservation(this.teburuController.getTeburu(teburuId).get(), customerReservationDTO.getStartDateTime(), endTime, this.customerController.getCustomer(customerReservationDTO.getCustomerId()).get(), customerReservationDTO.getGroupSize());
             this.reservationRepository.save(reservationTemp);
             return true;
         }
@@ -61,9 +58,10 @@ public class ReservationController {
      * Checks if a reservation in a specific restaurant during a specific period of time is available (if there is no
      * other reservation during the default 2 hour period) and returns the Id of the Teburu which is available.
      *
-     * @param time         marks the reservation starting time as Timestamp
-     * @param restaurantId
-     * @return int => id of a Teburu which is available at @param restaurantId; returns 0 if not
+     * @param time starting time of the reservation as Timestamp
+     * @param restaurantId id of the restaurnt from the CustomerReservationDTO Object
+     * @param groupSize int group size from the CustomerReservationDTO Object
+     * @return the id of the first Teburu which available
      */
     private int teburuIdForReservation(Timestamp time, int restaurantId, int groupSize) {
         int teburuId = 0;
@@ -82,25 +80,24 @@ public class ReservationController {
 
 
     /**
-     * Transforms Timestamp to LocalDateTime - adds 2 hours - and transforms it back to Timestamp to get the default
+     * Transforms Timestamp to long - adds 2 hours - and transforms it back to Timestamp to get the default
      * time a table will be blocked for after a successful reservation.
      *
-     * @param time the preferred time of reservation as Timestamp
-     * @return the @param time + 2 hours as Timestamp
+     * @param time starting time of the reservation as Timestamp
+     * @return end time of the reservation as Timestamp (2 hours after the starting time)
      */
     private Timestamp getEndTime(Timestamp time) {
-        LocalDateTime ldt = time.toLocalDateTime();
-        LocalDateTime ldtEnd = ldt.plusHours(2);
-        return Timestamp.valueOf(ldtEnd);
+        long endTimeLong = time.getTime() + (3600000*2);
+        Timestamp endTime = new Timestamp(endTimeLong);
+        return endTime;
     }
-
 
     /**
      * Sorts through a list of all tables (Teburu) of a Restaurant to get the tables with the right capacity.
      *
-     * @param teburus   result of function call findAll() from TeburuController (Iterable<Teburu>)
-     * @param groupSize the amount of people the customer wants to make a reservation for as int
-     * @return a list of Teburus that fit the @param groupSize
+     * @param teburus list of all teburus of a restaurant
+     * @param groupSize int groupsize from the CustomerReservationDTO
+     * @return list of all suitable (free) tables of a restaurant for this specific reservation request
      */
     private Iterable<Integer> sortTable(Iterable<Integer> teburus, int groupSize) {
         List<Integer> list = new LinkedList<>();
@@ -109,16 +106,22 @@ public class ReservationController {
         }
         for (int i = 0; i < list.size(); i++) {
             Integer teburu = list.get(i);
-            if (this.teburuController.getTeburu2(teburu).getCapacity() < groupSize) {
-                list.remove(teburu);
-                i--;
+            if (this.teburuController.getTeburu(teburu).isPresent()) {
+                Teburu tmpTeburu = (this.teburuController.getTeburu(teburu).get());
+                if (tmpTeburu.getCapacity() < groupSize) {
+                    list.remove(teburu);
+                    i--;
+                }
             }
         }
         for (int i = 0; i < list.size(); i++) {
             Integer teburu = list.get(i);
-            if (this.teburuController.getTeburu2(teburu).getCapacity() > groupSize * 2) {
-                list.remove(teburu);
-                i--;
+            if (this.teburuController.getTeburu(teburu).isPresent()) {
+                Teburu tmpTeburu = (this.teburuController.getTeburu(teburu).get());
+                if (tmpTeburu.getCapacity() > groupSize * 2) {
+                    list.remove(teburu);
+                    i--;
+                }
             }
         }
         return list;
