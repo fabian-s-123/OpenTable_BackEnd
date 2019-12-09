@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
@@ -13,5 +14,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 
     @Query(value="SELECT * FROM reservation WHERE id = ?1",nativeQuery = true)
     Reservation findByCustomerId(int id);
+
+    @Query(value="")
+    Reservation findByRestaurantDate(Date date);
+
+    @Query(value="")
+    Reservation findByCustomerDate(Date date);
 
 }
