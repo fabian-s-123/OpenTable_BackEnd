@@ -36,6 +36,8 @@ public class RestaurantApi {
         return Optional.of(restaurantController.getRestaurant(id));
     }
 
+    @GetMapping("/restaurants/name={name}")
+
     @DeleteMapping("/restaurants/{id}")
     public ResponseEntity deleteRestaurant(@PathVariable int id) {
         if(restaurantController.deleteRestaurant(id)) {

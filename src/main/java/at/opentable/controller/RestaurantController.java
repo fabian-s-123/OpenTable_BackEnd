@@ -34,6 +34,8 @@ public class RestaurantController {
         return restaurantRepository.findAll();
     }
 
+    public Optional<Restaurant> findRestaurantByName(String name) {return restaurantRepository.findOrderByName(name);}
+
     public boolean deleteRestaurant(int id) {
         Optional<Restaurant> optionalRestaurant = getRestaurant(id);
         if (optionalRestaurant.isPresent()) {
