@@ -1,6 +1,7 @@
 package at.opentable.api;
 
 import at.opentable.controller.RestaurantController;
+import at.opentable.dto.Image;
 import at.opentable.entity.Restaurant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

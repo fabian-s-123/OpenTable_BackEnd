@@ -138,6 +138,11 @@ public class Restaurant {
         this.socialMedia = socialMedia;
     }
 
+    /**
+     * Transforms String to JSON
+     *
+     * @return image as a JSON
+     */
     public List<Image> getImages() {
         List<Image> imageList = new LinkedList<>();
         Gson gson = new Gson();
@@ -146,6 +151,10 @@ public class Restaurant {
         return gson.fromJson (this.images, listOfMyClassObject);
     }
 
+    /**
+     *
+     * @param images requires link & description of Object Image
+     */
     public void setImages(List<Image> images) {
         Gson gson = new Gson();
         this.images = gson.toJson(images);
