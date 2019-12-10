@@ -1,6 +1,13 @@
 package at.opentable.entity;
 
+import at.opentable.dto.Image;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import javax.persistence.*;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -29,15 +36,13 @@ public class Restaurant {
     private String email;
 
     @Column(nullable = false)
-     private String telephone;
+    private String telephone;
 
     @Column(nullable = false)
     private String website;
 
-    @Column(name = "social_media", nullable = false)
+    @Column(name = "social_media")
     private String socialMedia;
-
-    private String description;
 
     private String images;
 
@@ -46,7 +51,8 @@ public class Restaurant {
     private String openingHours;
 
     private String menu;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Teburu> teburu;
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -132,20 +138,17 @@ public class Restaurant {
         this.socialMedia = socialMedia;
     }
 
-    public String getDescription() {
-        return description;
+    public List<Image> getImages() {
+        List<Image> imageList = new LinkedList<>();
+        Gson gson = new Gson();
+        Type listOfMyClassObject = new TypeToken<ArrayList<Image>>() {
+        }.getType();
+        return gson.fromJson (this.images, listOfMyClassObject);
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getImages() {
-        return images;
-    }
-
-    public void setImages(String images) {
-        this.images = images;
+    public void setImages(List<Image> images) {
+        Gson gson = new Gson();
+        this.images = gson.toJson(images);
     }
 
     public String getOpeningHours() {
