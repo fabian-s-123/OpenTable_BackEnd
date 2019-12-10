@@ -32,12 +32,8 @@ public class AuthorizationController {
         if(customer.isPresent()) {
             if(authenticationDTO.getPassword().equals(customer.get().getPassword())) {
                 currentCustomer.setId(customer.get().getId());
-                currentCustomer.setEmail(customer.get().getEmail());
-                currentCustomer.setFirstName(customer.get().getFirstName());
-                currentCustomer.setLastName(customer.get().getLastName());
-                currentCustomer.setTelephone(customer.get().getTelephone());
 
-                String jws = Jwts.builder().setSubject(currentCustomer.getEmail()).signWith(key).compact();
+                String jws = Jwts.builder().setSubject(currentCustomer.getId().toString()).signWith(key).compact();
                 currentCustomer.setJws(jws);
                 return new ResponseEntity(modelMapper.map(currentCustomer, AuthorizedCustomerDTO.class), HttpStatus.OK);
             }

@@ -7,21 +7,21 @@ import javax.persistence.Id;
 
 public class AuthorizedCustomerDTO {
     private Integer id;
-    private String firstName;
+/*    private String firstName;
     private String lastName;
     private String telephone;
-    private String email;
+    private String email;*/
     private String jws;
 
     public AuthorizedCustomerDTO() {
     }
 
-    public AuthorizedCustomerDTO(Integer id, String firstName, String lastName, String telephone, String email, String jws) {
+    public AuthorizedCustomerDTO(Integer id, String jws) {
         this.id = id;
-        this.firstName = firstName;
+/*        this.firstName = firstName;
         this.lastName = lastName;
         this.telephone = telephone;
-        this.email = email;
+        this.email = email;*/
         this.jws = jws;
     }
 
@@ -33,7 +33,7 @@ public class AuthorizedCustomerDTO {
         this.id = id;
     }
 
-    public String getFirstName() {
+ /*   public String getFirstName() {
         return firstName;
     }
 
@@ -63,7 +63,7 @@ public class AuthorizedCustomerDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
+    }*/
 
     public String getJws() {
         return jws;
