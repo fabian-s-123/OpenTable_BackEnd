@@ -9,16 +9,21 @@ import java.util.Date;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
+
     @Query(value = "SELECT * FROM reservation WHERE start_date_time >= ?1 AND end_date_time < ?2 AND table_id = ?3", nativeQuery = true)
-    Reservation checkReservationRepo (Timestamp timeStart, Timestamp timeEnd, int tableId);
+    Reservation checkReservationRepo (Timestamp timeStart, Timestamp timeEnd, int teburuId);
+
+    @Query(value="SELECT ?1 FROM teburu  WHERE restaurant_id = ?2",nativeQuery = true)
+    Boolean checkTeburuAvailibility(int teburuId,int restaurantId);
+    //die Tabelle reservation anstatt teburu abfragen?
 
     @Query(value="SELECT * FROM reservation WHERE id = ?1",nativeQuery = true)
     Reservation findByCustomerId(int id);
 
-    @Query(value="")
-    Reservation findByRestaurantDate(Date date);
+    @Query(value="SELECT * FROM reservation WHERE start_date_time >= ?1 AND end_date_time < ?2",nativeQuery = true)
+    Reservation findByRestaurantDate(Date dateStart, Date dateEnd); // Time anstatt Date vielleicht?
 
-    @Query(value="")
-    Reservation findByCustomerDate(Date date);
+    @Query(value="SELECT * FROM reservation WHERE start_date_time >= ?1 AND end_date_time < ?2 AND customer_id = ?3",nativeQuery = true)
+    Reservation findByCustomerDate(Date dateStart, Date dateEnd, int customerId);
 
 }
