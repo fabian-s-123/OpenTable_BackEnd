@@ -1,7 +1,7 @@
 package at.opentable.controller;
 
 import at.opentable.entity.Review;
-import at.opentable.Repository.ReviewRepository;
+import at.opentable.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -44,5 +44,4 @@ public class ReviewController {
         System.out.println("Review successfully deleted.");
         return true;
     }
-
 }
