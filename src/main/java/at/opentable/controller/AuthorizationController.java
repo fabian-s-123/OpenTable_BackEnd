@@ -3,7 +3,7 @@ package at.opentable.controller;
 import at.opentable.dto.AuthenticationDTO;
 import at.opentable.dto.AuthorizedCustomerDTO;
 import at.opentable.entity.Customer;
-import at.opentable.repository.CustomerRespository;
+import at.opentable.repository.CustomerRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,12 +22,12 @@ public class AuthorizationController {
     @Autowired
     ModelMapper modelMapper;
     @Autowired
-    CustomerRespository customerRespository;
+    CustomerRepository customerRepository;
 
     public ResponseEntity login(AuthenticationDTO authenticationDTO) {
         AuthorizedCustomerDTO currentCustomer = new AuthorizedCustomerDTO();
 
-        Optional<Customer> customer = customerRespository.findByEmail(authenticationDTO.getEmail());
+        Optional<Customer> customer = customerRepository.findByEmail(authenticationDTO.getEmail());
 
         if(customer.isPresent()) {
             if(authenticationDTO.getPassword().equals(customer.get().getPassword())) {
