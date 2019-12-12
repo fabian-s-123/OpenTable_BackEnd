@@ -26,18 +26,8 @@ public class TeburuController {
         return Optional.empty();
     }
 
-    public Optional getTeburu(int id) {
-        return Optional.of(teburuRepository.findById(id));
-    }
-
-
-    /**
-     * hacky, potential removal
-     * @param id
-     * @return
-     */
-    public Teburu getTeburu2(int id) {
-        return this.teburuRepository.findTeburuNoOptional(id);
+    public Optional<Teburu> getTeburu(int id) {
+        return teburuRepository.findById(id);
     }
 
     public Iterable<Teburu> findAll() {

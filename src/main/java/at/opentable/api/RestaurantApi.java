@@ -1,12 +1,14 @@
 package at.opentable.api;
 
 import at.opentable.controller.RestaurantController;
+import at.opentable.dto.Image;
 import at.opentable.entity.Restaurant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin
@@ -35,6 +37,14 @@ public class RestaurantApi {
     @GetMapping("/restaurants/{id}")
     public Optional getRestaurant(@PathVariable int id) {
         return Optional.of(restaurantController.getRestaurant(id));
+    }
+
+    @GetMapping("/restaurants/name={name}")
+    public List<Restaurant> findRestaurantByName(@PathVariable String name) {return restaurantController.findRestaurantByName(name);}
+
+    @GetMapping("/restaurants/city={city}/zip={zip}")
+    public List<Restaurant> findRestaurantByCityOrZip(@PathVariable String city, @PathVariable String zip) {
+        return restaurantController.findRestaurantByCityOrZip(city, zip);
     }
 
     @DeleteMapping("/restaurants/{id}")
