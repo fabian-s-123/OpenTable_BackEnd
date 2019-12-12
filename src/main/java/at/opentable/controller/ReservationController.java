@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ReservationController {
@@ -35,6 +36,10 @@ public class ReservationController {
         return this.reservationRepository.findAll();
     }
 
+    public Optional<Reservation> findById(int id)
+    {
+        return this.reservationRepository.findById(id);
+    }
 
     /**
      * Standard save function if teburuIdForReservation returns true.

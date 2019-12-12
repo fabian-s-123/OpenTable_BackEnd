@@ -1,9 +1,9 @@
 package at.opentable.controller;
 
+import at.opentable.Repository.CustomerRespository;
 import at.opentable.dto.AuthenticationDTO;
 import at.opentable.dto.AuthorizedCustomerDTO;
 import at.opentable.entity.Customer;
-import at.opentable.repository.CustomerRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ public class AuthorizationController {
     @Autowired
     ModelMapper modelMapper;
     @Autowired
-    CustomerRepository customerRepository;
+    CustomerRespository customerRepository;
 
     public ResponseEntity login(AuthenticationDTO authenticationDTO) {
         AuthorizedCustomerDTO currentCustomer = new AuthorizedCustomerDTO();
