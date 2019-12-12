@@ -3,7 +3,7 @@ package at.opentable.controller;
 import at.opentable.dto.CustomerReservationDTO;
 import at.opentable.entity.Reservation;
 import at.opentable.entity.Teburu;
-import at.opentable.repository.ReservationRepository;
+import at.opentable.Repository.ReservationRepository;
 import at.opentable.repository.TeburuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
