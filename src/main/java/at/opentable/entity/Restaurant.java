@@ -41,6 +41,9 @@ public class Restaurant {
     @Column(nullable = false)
     private String website;
 
+    @Column(nullable=false)
+    private String description;
+
     @Column(name = "social_media")
     private String socialMedia;
 
@@ -182,5 +185,13 @@ public class Restaurant {
 
     public void setTagList(List<Tag> tagList) {
         this.tagList = tagList;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
