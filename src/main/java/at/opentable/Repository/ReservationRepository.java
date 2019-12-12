@@ -1,4 +1,4 @@
-package at.opentable.repository;
+package at.opentable.Repository;
 
 import at.opentable.entity.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
