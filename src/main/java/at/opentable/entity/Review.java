@@ -24,7 +24,6 @@ public class Review {
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
     private Restaurant restaurant;
 
-    @Column(nullable = false)
     private Timestamp date;
 
 
