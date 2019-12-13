@@ -1,6 +1,7 @@
 package at.opentable.entity;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
@@ -23,10 +24,9 @@ public class Review {
     @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
     private Restaurant restaurant;
 
-
     @Column(nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date date;
+    private Timestamp date;
+
 
     public int getId() {
         return id;
@@ -52,7 +52,6 @@ public class Review {
         this.comment = comment;
     }
 
-
     public Customer getCustomer() {
         return customer;
     }
@@ -69,11 +68,11 @@ public class Review {
         this.restaurant = restaurant;
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 }
