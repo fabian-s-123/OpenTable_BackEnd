@@ -1,6 +1,7 @@
 package at.opentable.api;
 
 import at.opentable.controller.OpeningController;
+import at.opentable.dto.OpeningDTO;
 import at.opentable.entity.Opening;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class OpeningApi {
 
 
     @GetMapping
-    public Iterable<Opening> findAll() {
+    public Iterable<OpeningDTO> findAll() {
         return this.openingController.findAll();
     }
 
@@ -37,7 +38,7 @@ public class OpeningApi {
     }
 
     @GetMapping(path = "/restaurant/{id}")
-    public Iterable<Opening> findByRestaurant(@PathVariable int id) {
+    public Iterable<OpeningDTO> findByRestaurant(@PathVariable int id) {
         return this.openingController.findByRestaurant(id);
     }
 
