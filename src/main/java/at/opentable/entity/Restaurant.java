@@ -50,8 +50,9 @@ public class Restaurant {
     private String images;
 
     // Optional implementation
-    @Column(name = "opening_hours")
-    private String openingHours;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "opening_hours", referencedColumnName = "id")
+    private List<Opening> opening;
 
     private String menu;
 
@@ -163,12 +164,12 @@ public class Restaurant {
         this.images = gson.toJson(images);
     }
 
-    public String getOpeningHours() {
-        return openingHours;
+    public List<Opening> getOpening() {
+        return opening;
     }
 
-    public void setOpeningHours(String openingHours) {
-        this.openingHours = openingHours;
+    public void setOpening(List<Opening> opening) {
+        this.opening = opening;
     }
 
     public String getMenu() {
