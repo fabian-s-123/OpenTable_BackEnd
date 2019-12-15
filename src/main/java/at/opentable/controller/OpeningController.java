@@ -36,9 +36,10 @@ public class OpeningController {
     public Iterable<OpeningDTO> findAll() {
         Iterable<Opening> openings = this.openingRepository.findAll();
         ArrayList<OpeningDTO> openingDTOS = new ArrayList<>();
-        for (Opening opening: openings) {
+        for (Opening opening : openings) {
             openingDTOS.add(new OpeningDTO(opening));
-        } return openingDTOS;
+        }
+        return openingDTOS;
     }
 
     public Optional<Opening> updateOpening(Opening opening) {
