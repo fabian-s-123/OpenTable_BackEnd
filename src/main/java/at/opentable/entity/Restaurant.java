@@ -1,6 +1,7 @@
 package at.opentable.entity;
 
 import at.opentable.dto.Image;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -50,17 +51,26 @@ public class Restaurant {
     private String images;
 
     // Optional implementation
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "opening_hours", referencedColumnName = "id")
     private List<Opening> opening;
+
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Holiday> holidays;
 
     private String menu;
 
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL)
     private List<Teburu> teburu;
 
+    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Tag> tagList;
+
+    public Restaurant() {
+    }
 
     public int getId() {
         return id;
@@ -194,5 +204,25 @@ public class Restaurant {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setImages(String images) {
+        this.images = images;
+    }
+
+    public List<Holiday> getHolidays() {
+        return holidays;
+    }
+
+    public void setHolidays(List<Holiday> holidays) {
+        this.holidays = holidays;
+    }
+
+    public List<Teburu> getTeburu() {
+        return teburu;
+    }
+
+    public void setTeburu(List<Teburu> teburu) {
+        this.teburu = teburu;
     }
 }
