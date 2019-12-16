@@ -169,7 +169,7 @@ public class ReservationController {
      * Iterates through a list of all tables (Teburu) of a Restaurant to get the first pair of tables with a min
      * combined capacity of the required group size.
      *
-     * @param teburus   list of all teburus of a restaurant
+     * @param teburus list of all teburus of a restaurant
      * @param groupSize int groupSize from the CustomerReservationDTO
      * @return pair of two suitable (free) teburuId's (with min combined capacity of groupSize) of a restaurant
      */
