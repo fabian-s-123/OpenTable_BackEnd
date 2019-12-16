@@ -1,9 +1,10 @@
 package at.opentable.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-public class Owner {
+public class Admin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,6 +15,14 @@ public class Owner {
     @Column(name="last_name")
     private String lastName;
 
-    private int restaurantId;
+    @OneToMany
+    @JoinColumn(name="restaurant_id", referencedColumnName = "id",nullable = false)
+    private List<Restaurant> restaurants;
+
+    private String email;
+
+    private Boolean isAdmin;
+
+
 
 }
