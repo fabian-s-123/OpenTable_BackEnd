@@ -22,9 +22,7 @@ public class Restaurant {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany
-    @JsonManagedReference
-    private List<Admin> admins;
+
 
     @Column(nullable = false)
     private String city;
@@ -73,6 +71,10 @@ public class Restaurant {
     @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Tag> tagList;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Admin> admins;
 
     public Restaurant() {
     }
@@ -229,5 +231,14 @@ public class Restaurant {
 
     public void setTeburu(List<Teburu> teburu) {
         this.teburu = teburu;
+    }
+
+    public List<Admin> getAdmins() {
+        return admins;
+    }
+
+
+    public void setAdmins(List<Admin> admins) {
+        this.admins = admins;
     }
 }
