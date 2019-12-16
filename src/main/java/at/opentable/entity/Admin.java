@@ -1,5 +1,7 @@
 package at.opentable.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -18,9 +20,10 @@ public class Admin {
     @Column(name="password")
     private String password;
 
-    @ManyToMany
+    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name="restaurant_id", referencedColumnName = "id",nullable = false)
-    private List<Restaurant> restaurants;
+    private Restaurant restaurant;
 
     @Column(name="email")
     private String email;

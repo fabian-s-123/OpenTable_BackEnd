@@ -1,6 +1,8 @@
 package at.opentable.entity;
 
 import at.opentable.dto.Image;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,8 +22,8 @@ public class Restaurant {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany
-    @JoinColumn(name="admin_ids",nullable = false)
+    @OneToMany
+    @JsonManagedReference
     private List<Admin> admins;
 
     @Column(nullable = false)
