@@ -2,6 +2,7 @@ package at.opentable.controller;
 
 import at.opentable.dto.HolidayDTO;
 import at.opentable.entity.Holiday;
+import at.opentable.entity.Restaurant;
 import at.opentable.repository.HolidayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,8 @@ public class HolidayController {
 
     @Autowired
     private HolidayRepository holidayRepository;
+    @Autowired
+    private RestaurantController restaurantController;
 
     public Iterable<HolidayDTO> findByRestaurant(int id) {
         Iterable<Holiday> holidays = holidayRepository.findByRestaurant(id);
@@ -25,8 +28,16 @@ public class HolidayController {
     }
 
     public boolean createHoliday(Holiday holiday) {
-        this.holidayRepository.save(holiday);
-        return true;
+        Holiday objEntity = this.holidayRepository.save(holiday);
+        Optional<Restaurant> updateRestaurant = this.restaurantController.getRestaurant(holiday.getRestaurant().getId());
+        if(updateRestaurant.isPresent()){
+            Restaurant restaurant = updateRestaurant.get();
+            restaurant.getHolidays().add(objEntity);
+            this.restaurantController.updateRestaurant(restaurant);
+            return true;
+        }
+        return false;
+
     }
 
     public Optional<Holiday> getHoliday(int id) {
@@ -53,8 +64,16 @@ public class HolidayController {
     }
 
     public boolean deleteHoliday(int id) {
-        this.holidayRepository.deleteById(id);
-        return true;
+        Holiday holiday = this.getHoliday(id).get();
+        Optional<Restaurant> optionalRestaurant = this.restaurantController.getRestaurant(holiday.getRestaurant().getId());
+        if (this.getHoliday(id).isPresent()) {
+            Restaurant restaurant = optionalRestaurant.get();
+            restaurant.getHolidays().remove(holiday);
+            this.restaurantController.updateRestaurant(restaurant);
+            this.holidayRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
 }
