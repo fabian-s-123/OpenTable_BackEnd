@@ -1,5 +1,7 @@
 package at.opentable.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,6 +12,7 @@ public class Teburu {
     private int id;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name="restaurant_id", referencedColumnName = "id", nullable = false)
     private Restaurant restaurant;
 

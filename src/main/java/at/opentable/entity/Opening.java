@@ -1,5 +1,7 @@
 package at.opentable.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.sql.Time;
 
@@ -12,7 +14,8 @@ public class Opening {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference
+    @JoinColumn(name="restaurant_id", referencedColumnName = "id", nullable = false)
     private Restaurant restaurant;
 
     @Enumerated(EnumType.STRING)
@@ -23,6 +26,8 @@ public class Opening {
     @Column(name = "end_opening", nullable = false)
     private Time endOpening;
 
+    public Opening() {
+    }
 
     public enum Weekday {
         MONDAY,

@@ -1,5 +1,7 @@
 package at.opentable.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -11,7 +13,8 @@ public class Holiday {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id", referencedColumnName = "id", nullable = false)
+    @JsonBackReference
+    @JoinColumn(name="restaurant_id", referencedColumnName = "id", nullable = false)
     private Restaurant restaurant;
 
     @Column(name = "start_holiday", nullable = false)
@@ -23,6 +26,9 @@ public class Holiday {
     private Date endHoliday;
 
     private String comment;
+
+    public Holiday() {
+    }
 
     public Integer getId() {
         return id;
