@@ -21,7 +21,7 @@ public class Restaurant {
     private String name;
 
     @ManyToMany
-    @JoinColumn(name="admin_ids",referencedColumnName = "id",nullable = false)
+    @JoinColumn(name="admin_ids",nullable = false)
     private List<Admin> admins;
 
     @Column(nullable = false)
