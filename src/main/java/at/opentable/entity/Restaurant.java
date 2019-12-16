@@ -68,7 +68,6 @@ public class Restaurant {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Teburu> teburu;
 
-    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Tag> tagList;
 

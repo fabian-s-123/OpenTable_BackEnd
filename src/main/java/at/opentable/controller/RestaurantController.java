@@ -29,7 +29,7 @@ public class RestaurantController {
     }
 
     public Optional getRestaurant(int id) {
-        return Optional.of(restaurantRepository.findById(id));
+        return restaurantRepository.findById(id);
     }
 
     public Iterable<Restaurant> findAll() {

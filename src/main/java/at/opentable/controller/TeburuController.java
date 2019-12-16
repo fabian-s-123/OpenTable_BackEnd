@@ -1,5 +1,6 @@
 package at.opentable.controller;
 
+import at.opentable.entity.Restaurant;
 import at.opentable.entity.Teburu;
 import at.opentable.repository.TeburuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,17 @@ public class TeburuController {
 
     @Autowired
     private TeburuRepository teburuRepository;
+    @Autowired
+    private RestaurantController restaurantController;
 
     public void createTeburu(Teburu teburu) {
-        teburuRepository.save(teburu);
+        Teburu objEntity = teburuRepository.save(teburu);
+        Optional<Restaurant> optionalRestaurant = this.restaurantController.getRestaurant(teburu.getRestaurant().getId());
+        if (optionalRestaurant.isPresent()) {
+            Restaurant restaurant = optionalRestaurant.get();
+            restaurant.getTeburu().add(objEntity);
+            this.restaurantController.updateRestaurant(restaurant);
+        }
     }
 
     public Optional updateTeburu(Teburu teburu) {
@@ -35,8 +44,12 @@ public class TeburuController {
     }
 
     public boolean deleteTeburu(int id) {
-        Optional<Teburu> optionalTeburu = getTeburu(id);
-        if (optionalTeburu.isPresent()) {
+        Teburu teburu = getTeburu(id).get();
+        Optional<Restaurant> optionalRestaurant = this.restaurantController.getRestaurant(teburu.getRestaurant().getId());
+        if (getTeburu(id).isPresent()) {
+            Restaurant restaurant = optionalRestaurant.get();
+            restaurant.getTeburu().remove(teburu);
+            this.restaurantController.updateRestaurant(restaurant);
             teburuRepository.deleteById(id);
             return true;
         } else return false;
