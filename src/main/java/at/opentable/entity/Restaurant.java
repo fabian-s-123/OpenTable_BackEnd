@@ -20,6 +20,10 @@ public class Restaurant {
     @Column(nullable = false)
     private String name;
 
+    @ManyToMany
+    @JoinColumn(name="admin_ids",referencedColumnName = "id",nullable = false)
+    private List<Admin> admins;
+
     @Column(nullable = false)
     private String city;
 

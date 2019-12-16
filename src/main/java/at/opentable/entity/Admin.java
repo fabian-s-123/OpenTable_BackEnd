@@ -15,13 +15,18 @@ public class Admin {
     @Column(name="last_name")
     private String lastName;
 
-    @OneToMany
+    @Column(name="password")
+    private String password;
+
+    @ManyToMany
     @JoinColumn(name="restaurant_id", referencedColumnName = "id",nullable = false)
     private List<Restaurant> restaurants;
 
+    @Column(name="email")
     private String email;
 
-    private Boolean isAdmin;
+    @Column(name="is_owner")
+    private Boolean isOwner;
 
 
 
