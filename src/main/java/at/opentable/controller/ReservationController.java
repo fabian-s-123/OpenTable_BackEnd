@@ -36,8 +36,11 @@ public class ReservationController {
         return this.reservationRepository.findById(id);
     }
 
+
     /**
-     * Save function if teburuIdForReservation returns true.
+     * Save function if teburuIdForReservation is not null. Up to two tables can be used for a reservation. This gets
+     * handled in teburuIdForReservation, which calls either sortTable or sortTableCombined through the function
+     * teburuIdForReservationCombined.
      *
      * @param customerReservationDTO body is required for translating this object into a Reservation
      * @return boolean if creating a Reservation was successful
@@ -55,16 +58,18 @@ public class ReservationController {
         return false;
     }
 
+
     /**
      * Checks if a reservation in a specific restaurant during a specific period of time is available (if there is no
      * other reservation during the default 2 hour period) and returns the Id of the Teburu which is available. If
      * there is no single Teburu available, the function teburuIdForReservationCombined is called and returns a pair
      * of two tables with the min capacity of groupSize, which are available for reservation.
      *
-     * @param time         starting time of the reservation as Timestamp
+     * @param time starting time of the reservation as Timestamp
      * @param restaurantId id of the restaurnt from the CustomerReservationDTO Object
-     * @param groupSize    int group size from the CustomerReservationDTO Object
-     * @return the id of the first Teburu which available
+     * @param groupSize int group size from the CustomerReservationDTO Object
+     * @return the id of either the first Teburu available or two Teburu with combined capacity of min groupSize
+     * available
      */
     private List<Integer> teburuIdForReservation(Timestamp time, int restaurantId, int groupSize) {
         List<Integer> teburuId = null;
@@ -77,8 +82,8 @@ public class ReservationController {
                 teburuId.add(teburu);
                 break;
             } else {
-                List<Integer> listCombined = this.teburuIdForReservationCombined(time, timeEnd, restaurantId, groupSize);
-                if (listCombined.size() > 0) {
+                List<Integer> listCombined = this.teburuIdForReservationCombined(this.teburuController.findAllTeburuByRestaurantId(restaurantId), time, timeEnd, groupSize);
+                if (!(listCombined == null)) {
                     teburuId.add(listCombined.get(0));
                     teburuId.add(listCombined.get(1));
                 }
@@ -89,51 +94,9 @@ public class ReservationController {
 
 
     /**
+     * Sorts through a list of all tables (Teburu) of a Restaurant to get the tables with the capacity >= groupSize.
      *
-     *
-     * @param time
-     * @param timeEnd
-     * @param restaurantId
-     * @param groupSize
-     * @return
-     */
-    private List<Integer> teburuIdForReservationCombined(Timestamp time, Timestamp timeEnd, int restaurantId, int groupSize) {
-        Iterable<Integer> list = this.teburuController.findAllTeburuByRestaurantId(restaurantId);
-        List<Integer> teburuId = this.sortTableCombined(list, groupSize);
-        List<Integer> teburuIdAvailable = null;
-        for (Integer i = 0; i < teburuId.size(); i++) {
-            Reservation temp = this.reservationRepository.checkReservationRepo(time, timeEnd, teburuId.get(i));
-            if (temp == null) {
-                Reservation temp2 = this.reservationRepository.checkReservationRepo(time, timeEnd, teburuId.get(i + 1));
-                if (temp2 == null) {
-                    teburuIdAvailable.add(temp.getId());
-                    teburuIdAvailable.add(temp.getId());
-                }
-            }
-        }
-        return teburuIdAvailable;
-    }
-
-
-    /**
-     * Transforms Timestamp to long - adds 2 hours - and transforms it back to Timestamp to get the default
-     * time a table will be blocked for after a successful reservation.
-     *
-     * @param time starting time of the reservation as Timestamp
-     * @return end time of the reservation as Timestamp (2 hours after the starting time)
-     */
-    private Timestamp getEndTime(Timestamp time) {
-        long endTimeLong = time.getTime() + (3600000 * 2);
-        Timestamp endTime = new Timestamp(endTimeLong);
-        return endTime;
-    }
-
-
-    /**
-     * Sorts through a list of all tables (Teburu) of a Restaurant to get the tables with the right capacity
-     * >= groupSize.
-     *
-     * @param teburus   list of all teburus of a restaurant
+     * @param teburus list of all teburus of a restaurant
      * @param groupSize int groupSize from the CustomerReservationDTO
      * @return list of all suitable (free) teburuId's of a restaurant for this specific reservation request
      */
@@ -167,6 +130,42 @@ public class ReservationController {
 
 
     /**
+     * Checks if there are two Teburus with a combined capacity of min the required groupSize and if they are are
+     * available for reservation. Iterates through every possible combination in a restaurant.
+     *
+     * @param time starting time of the reservation as Timestamp
+     * @param timeEnd ending time of the reservation as Timestamp
+     * @param groupSize int group size from the CustomerReservationDTO Object
+     * @return a list (size: 2) of teburuId's
+     */
+    private List<Integer> teburuIdForReservationCombined(Iterable<Integer> list, Timestamp time, Timestamp timeEnd, int groupSize) {
+        List<Integer> listAllTeburus = new LinkedList<>();
+        for (Integer teburu : list) {
+            listAllTeburus.add(teburu);
+        }
+
+        List<Integer> teburuIdAvailable = null;
+
+        while (listAllTeburus.size() >= 2) {
+            List<Integer> teburuId = this.sortTableCombined(listAllTeburus, groupSize);
+            Reservation temp1 = this.reservationRepository.checkReservationRepo(time, timeEnd, teburuId.get(0));
+            if (temp1 == null) {
+                Reservation temp2 = this.reservationRepository.checkReservationRepo(time, timeEnd, teburuId.get(1));
+                if (temp2 == null) {
+                    teburuIdAvailable.add(temp1.getId());
+                    teburuIdAvailable.add(temp2.getId());
+                } else {
+                    listAllTeburus.remove(teburuId.get(1));
+                }
+            } else {
+                listAllTeburus.remove(teburuId.get(0));
+            }
+        }
+        return teburuIdAvailable;
+    }
+
+
+    /**
      * Iterates through a list of all tables (Teburu) of a Restaurant to get the first pair of tables with a min
      * combined capacity of the required group size.
      *
@@ -180,6 +179,7 @@ public class ReservationController {
             list.add(teburu);
         }
         List<Integer> listTeburuId = null;
+
         for (int i = 0; i < list.size() - 1; i++) {
             Integer teburu1 = list.get(i);
             for (int j = i + 1; j < list.size(); j++) {
@@ -196,5 +196,19 @@ public class ReservationController {
             }
         }
         return listTeburuId;
+    }
+
+
+    /**
+     * Transforms Timestamp to long - adds 2 hours - and transforms it back to Timestamp to get the default
+     * time a table will be blocked for after a successful reservation.
+     *
+     * @param time starting time of the reservation as Timestamp
+     * @return end time of the reservation as Timestamp (2 hours after the starting time)
+     */
+    private Timestamp getEndTime(Timestamp time) {
+        long endTimeLong = time.getTime() + (3600000 * 2);
+        Timestamp endTime = new Timestamp(endTimeLong);
+        return endTime;
     }
 }
