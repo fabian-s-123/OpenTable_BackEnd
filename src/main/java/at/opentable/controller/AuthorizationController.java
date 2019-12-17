@@ -1,6 +1,6 @@
 package at.opentable.controller;
 
-import at.opentable.Repository.CustomerRespository;
+import at.opentable.repository.CustomerRespository;
 import at.opentable.dto.AuthenticationDTO;
 import at.opentable.dto.AuthorizedCustomerDTO;
 import at.opentable.entity.Customer;
