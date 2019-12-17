@@ -42,7 +42,7 @@ public class TeburuController {
     public Iterable<Teburu> findAll() {
         return teburuRepository.findAll();
     }
-git
+
     public boolean deleteTeburu(int id) {
         Teburu teburu = getTeburu(id).get();
         Optional<Restaurant> optionalRestaurant = this.restaurantController.getRestaurant(teburu.getRestaurant().getId());
