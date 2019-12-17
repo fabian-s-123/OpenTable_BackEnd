@@ -1,4 +1,4 @@
-package at.opentable.Repository;
+package at.opentable.repository;
 
 import at.opentable.entity.Customer;
 import at.opentable.entity.Teburu;
