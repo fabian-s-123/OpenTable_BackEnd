@@ -1,6 +1,6 @@
 package at.opentable.controller;
 
-import at.opentable.repository.CustomerRespository;
+import at.opentable.repository.CustomerRepository;
 import at.opentable.dto.AuthenticationDTO;
 import at.opentable.dto.AuthorizedCustomerDTO;
 import at.opentable.entity.Customer;
@@ -22,7 +22,7 @@ public class AuthorizationController {
     @Autowired
     ModelMapper modelMapper;
     @Autowired
-    CustomerRespository customerRepository;
+    CustomerRepository customerRepository;
 
     public ResponseEntity login(AuthenticationDTO authenticationDTO) {
         AuthorizedCustomerDTO currentCustomer = new AuthorizedCustomerDTO();
