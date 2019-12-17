@@ -1,6 +1,5 @@
 package at.opentable.controller;
 
-import at.opentable.dto.Image;
 import at.opentable.entity.Restaurant;
 import at.opentable.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;

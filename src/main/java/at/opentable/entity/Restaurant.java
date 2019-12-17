@@ -211,10 +211,6 @@ public class Restaurant {
         this.description = description;
     }
 
-    public void setImages(String images) {
-        this.images = images;
-    }
-
     public List<Holiday> getHolidays() {
         return holidays;
     }

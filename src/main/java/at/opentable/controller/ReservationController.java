@@ -3,7 +3,7 @@ package at.opentable.controller;
 import at.opentable.dto.CustomerReservationDTO;
 import at.opentable.entity.Reservation;
 import at.opentable.entity.Teburu;
-import at.opentable.Repository.ReservationRepository;
+import at.opentable.repository.ReservationRepository;
 import at.opentable.repository.TeburuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,7 +47,7 @@ public class ReservationController {
      */
     public boolean createCustomerReservation(CustomerReservationDTO customerReservationDTO) {
         Timestamp endTime = this.getEndTime(customerReservationDTO.getStartDateTime());
-        List<Integer> teburuId = this.teburuIdForReservation(endTime, customerReservationDTO.getRestaurantId(), customerReservationDTO.getGroupSize());
+        List<Integer> teburuId = this.teburuIdForReservation(customerReservationDTO.getStartDateTime(), endTime, customerReservationDTO.getRestaurantId(), customerReservationDTO.getGroupSize());
         if (!(teburuId.size() == 0)) {
             for (Integer teburu : teburuId) {
                 Reservation reservationTemp = new Reservation(this.teburuController.getTeburu(teburu).get(), customerReservationDTO.getStartDateTime(), endTime, this.customerController.getCustomer(customerReservationDTO.getCustomerId()).get(), customerReservationDTO.getGroupSize());
@@ -71,22 +71,23 @@ public class ReservationController {
      * @return the id of either the first Teburu available or two Teburu with combined capacity of min groupSize
      * available
      */
-    private List<Integer> teburuIdForReservation(Timestamp time, int restaurantId, int groupSize) {
-        List<Integer> teburuId = null;
-        Iterable<Integer> list = this.sortTable(this.teburuController.findAllTeburuByRestaurantId(restaurantId), groupSize);
-        Timestamp timeEnd = this.getEndTime(time);
+    private List<Integer> teburuIdForReservation(Timestamp time, Timestamp endTime, int restaurantId, int groupSize) {
+        List<Integer> teburuId = new LinkedList<>();
+        List<Integer> list = this.sortTable(this.teburuController.findAllTeburuByRestaurantId(restaurantId), groupSize);
 
-        for (Integer teburu : list) {
-            Reservation temp = this.reservationRepository.checkReservationRepo(time, timeEnd, teburu);
-            if (temp == null) {
-                teburuId.add(teburu);
-                break;
-            } else {
-                List<Integer> listCombined = this.teburuIdForReservationCombined(this.teburuController.findAllTeburuByRestaurantId(restaurantId), time, timeEnd, groupSize);
-                if (!(listCombined == null)) {
-                    teburuId.add(listCombined.get(0));
-                    teburuId.add(listCombined.get(1));
+        if (list.size() > 0) {
+            for (Integer teburu : list) {
+                Reservation temp = this.reservationRepository.checkReservationRepo(time, endTime, teburu);
+                if (temp == null) {
+                    teburuId.add(teburu);
+                    return teburuId;
                 }
+            }
+        } else {
+            List<Integer> listCombined = this.teburuIdForReservationCombined(this.teburuController.findAllTeburuByRestaurantId(restaurantId), time, endTime, groupSize);
+            if (listCombined.size() > 0) {
+                teburuId.add(listCombined.get(0));
+                teburuId.add(listCombined.get(1));
             }
         }
         return teburuId;
@@ -100,7 +101,7 @@ public class ReservationController {
      * @param groupSize int groupSize from the CustomerReservationDTO
      * @return list of all suitable (free) teburuId's of a restaurant for this specific reservation request
      */
-    private Iterable<Integer> sortTable(Iterable<Integer> teburus, int groupSize) {
+    private List<Integer> sortTable(Iterable<Integer> teburus, int groupSize) {
         List<Integer> list = new LinkedList<>();
         for (Integer teburu : teburus) {
             list.add(teburu);
@@ -144,21 +145,26 @@ public class ReservationController {
             listAllTeburus.add(teburu);
         }
 
-        List<Integer> teburuIdAvailable = null;
+        List<Integer> teburuIdAvailable = new LinkedList<>();
 
         while (listAllTeburus.size() >= 2) {
             List<Integer> teburuId = this.sortTableCombined(listAllTeburus, groupSize);
-            Reservation temp1 = this.reservationRepository.checkReservationRepo(time, timeEnd, teburuId.get(0));
-            if (temp1 == null) {
-                Reservation temp2 = this.reservationRepository.checkReservationRepo(time, timeEnd, teburuId.get(1));
-                if (temp2 == null) {
-                    teburuIdAvailable.add(temp1.getId());
-                    teburuIdAvailable.add(temp2.getId());
+            if (teburuId.size() > 0) {
+                Reservation temp1 = this.reservationRepository.checkReservationRepo(time, timeEnd, teburuId.get(0));
+                if (temp1 == null) {
+                    Reservation temp2 = this.reservationRepository.checkReservationRepo(time, timeEnd, teburuId.get(1));
+                    if (temp2 == null) {
+                        teburuIdAvailable.add(teburuId.get(0));
+                        teburuIdAvailable.add(teburuId.get(1));
+                        return teburuIdAvailable;
+                    } else {
+                        listAllTeburus.remove(teburuId.get(1));
+                    }
                 } else {
-                    listAllTeburus.remove(teburuId.get(1));
+                    listAllTeburus.remove(teburuId.get(0));
                 }
             } else {
-                listAllTeburus.remove(teburuId.get(0));
+                return teburuIdAvailable;
             }
         }
         return teburuIdAvailable;
@@ -178,7 +184,7 @@ public class ReservationController {
         for (Integer teburu : teburus) {
             list.add(teburu);
         }
-        List<Integer> listTeburuId = null;
+        List<Integer> listTeburuId = new LinkedList<>();
 
         for (int i = 0; i < list.size() - 1; i++) {
             Integer teburu1 = list.get(i);
@@ -190,7 +196,7 @@ public class ReservationController {
                     if (tmpTeburu1.getCapacity() + tmpTeburu2.getCapacity() >= groupSize) {
                         listTeburuId.add(tmpTeburu1.getId());
                         listTeburuId.add(tmpTeburu2.getId());
-                        break;
+                        return listTeburuId;
                     }
                 }
             }
