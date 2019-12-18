@@ -22,7 +22,6 @@ public class Restaurant {
     @Column(nullable = false)
     private String name;
 
-
     @Column(nullable = false)
     private String city;
 
@@ -70,9 +69,13 @@ public class Restaurant {
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Tag> tagList;
 
+
     @OneToMany(cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Admin> admins;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Review> reviews;
+
 
     public Restaurant() {
     }
@@ -231,8 +234,15 @@ public class Restaurant {
         return admins;
     }
 
-
     public void setAdmins(List<Admin> admins) {
         this.admins = admins;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }

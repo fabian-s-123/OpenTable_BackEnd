@@ -1,5 +1,8 @@
 package at.opentable.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.List;
+
 import javax.persistence.*;
 
 @Entity
@@ -23,6 +26,9 @@ public class Customer {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Review> reviews;
 
     public int getId() {
         return id;
@@ -70,5 +76,13 @@ public class Customer {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }
