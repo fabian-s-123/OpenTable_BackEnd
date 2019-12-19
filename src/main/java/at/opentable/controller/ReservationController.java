@@ -36,6 +36,7 @@ public class ReservationController {
         return this.reservationRepository.findById(id);
     }
 
+    //TODO groupSize min value: 1
 
     /**
      * Save function if teburuIdForReservation is not null. Up to two tables can be used for a reservation. This gets

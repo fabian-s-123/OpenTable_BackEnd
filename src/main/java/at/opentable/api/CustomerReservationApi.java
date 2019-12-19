@@ -24,6 +24,7 @@ public class CustomerReservationApi {
     public ResponseEntity createCustomerReservation(@RequestBody CustomerReservationDTO customerReservationDTO) {
         boolean success = this.reservationController.createCustomerReservation(customerReservationDTO);
         if (success) {
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
