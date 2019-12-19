@@ -1,6 +1,9 @@
 package at.opentable.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Tag {
@@ -14,6 +17,11 @@ public class Tag {
 
     @Column(nullable = false)
     private String category;
+
+    @JsonBackReference
+    @ManyToMany
+    @JoinTable(name="restaurant_tag")
+    private List<Restaurant> restaurants;
 
     public int getId() {
         return id;
@@ -37,5 +45,13 @@ public class Tag {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public List<Restaurant> getRestaurants() {
+        return restaurants;
+    }
+
+    public void setRestaurants(List<Restaurant> restaurants) {
+        this.restaurants = restaurants;
     }
 }

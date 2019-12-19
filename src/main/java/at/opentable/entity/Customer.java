@@ -1,6 +1,16 @@
 package at.opentable.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import java.util.List;
+
 import javax.persistence.*;
+
+
+//deserializes the first reference as a complete object; only shows the id for the circle reference
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 
 @Entity
 public class Customer {
@@ -23,6 +33,10 @@ public class Customer {
 
     @Column(nullable = false)
     private String password;
+
+    @JsonManagedReference(value="get-reviews-customer")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
+    private List<Review> reviews;
 
     public int getId() {
         return id;
@@ -70,5 +84,13 @@ public class Customer {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }

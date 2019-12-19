@@ -1,7 +1,6 @@
 package at.opentable.dto;
 
 import java.sql.Timestamp;
-import java.time.ZonedDateTime;
 
 public class CustomerReservationDTO {
 

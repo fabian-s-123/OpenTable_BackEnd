@@ -1,6 +1,9 @@
 package at.opentable.entity;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.sql.Timestamp;
 import java.util.Optional;
 
@@ -28,6 +31,8 @@ public class Reservation {
     private Customer customer;
 
     @Column(name = "group_size", nullable = false)
+    @Min(1)
+    @Max(30)
     private int groupSize;
 
     public Reservation () {
