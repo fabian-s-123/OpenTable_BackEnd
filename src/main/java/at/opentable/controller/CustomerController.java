@@ -3,6 +3,7 @@ package at.opentable.controller;
 import at.opentable.entity.Customer;
 import at.opentable.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 
 import java.util.Optional;
@@ -11,9 +12,12 @@ import java.util.Optional;
 public class CustomerController {
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private CustomerRepository customerRepository;
 
     public boolean createCustomer(Customer customer) {
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         this.customerRepository.save(customer);
         System.out.println("Customer successfully created.");
         return true;
