@@ -1,7 +1,6 @@
 package at.opentable.api;
 
 import at.opentable.controller.AdminController;
-import at.opentable.dto.AdminDTO;
 import at.opentable.entity.Admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,6 +39,7 @@ public class AdminApi {
     public Optional<Admin> getAdmin(@PathVariable int id) {
         return this.adminController.getAdmin(id);
     }
+
     //http://localhost:8080/api/admins?restaurantId=x
     @GetMapping
     public Iterable<Admin> getAdminsByRestaurantId(@RequestParam (required = false) int restaurantId)
@@ -49,9 +49,9 @@ public class AdminApi {
 
     //http://localhost:8080/api/admins/owner?restaurantId=x
     @GetMapping(path="/owner")
-    public Optional<Admin> getOwnerByRestaurantId(@RequestParam(required = false) int restaurantId)
+    public Admin getOwnerByRestaurantId(@RequestParam(required = false) int restaurantId)
     {
-
+        return this.adminController.getOwnerByRestaurantId(restaurantId);
     }
 
 
