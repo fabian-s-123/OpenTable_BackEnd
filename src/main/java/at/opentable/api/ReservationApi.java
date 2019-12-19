@@ -19,14 +19,14 @@ public class ReservationApi {
     @Autowired
     private ReservationController reservationController;
 
-    @PostMapping
+    /*@PostMapping
     public ResponseEntity createReservation(@RequestBody CustomerReservationDTO customerReservationDTO) {
         boolean success = this.reservationController.createCustomerReservation(customerReservationDTO);
         if (success) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-    }
+    }*/
 
     @GetMapping
     public Iterable<Reservation> findAll () {
