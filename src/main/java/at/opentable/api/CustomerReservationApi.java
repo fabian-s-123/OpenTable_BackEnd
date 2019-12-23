@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @CrossOrigin
 @RestController
 @RequestMapping(path="/api/customerReservations")
@@ -25,8 +23,10 @@ public class CustomerReservationApi {
     @PostMapping
     public ResponseEntity createCustomerReservation(@RequestHeader (name="Authorization") String bearer, @RequestBody CustomerReservationDTO customerReservationDTO) {
         String[] tokens = bearer.split(" ");
-        //check for size of tokens[] && check if token[1] != null
-        String jwt = tokens[1];
+        String jwt;
+        if (tokens.length > 1 && tokens[1] != null) {
+            jwt = tokens[1];
+        } else return new ResponseEntity<>("something-went-wrong", HttpStatus.BAD_REQUEST);
 
         String result = this.reservationController.createCustomerReservation(jwt, customerReservationDTO);
         switch (result) {
