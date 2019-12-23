@@ -26,6 +26,8 @@ public class ReservationController {
     private CustomerController customerController;
     @Autowired
     private TeburuController teburuController;
+    @Autowired
+    private AuthorizationController authorizationController;
 
 
     public Iterable<Reservation> findAll() {
@@ -46,17 +48,24 @@ public class ReservationController {
      * @param customerReservationDTO body is required for translating this object into a Reservation
      * @return boolean if creating a Reservation was successful
      */
-    public boolean createCustomerReservation(CustomerReservationDTO customerReservationDTO) {
+    public String createCustomerReservation(String jwt, CustomerReservationDTO customerReservationDTO) {
+        if (customerReservationDTO.getGroupSize() > 30) {
+            return "group-size";
+        }
         Timestamp endTime = this.getEndTime(customerReservationDTO.getStartDateTime());
         List<Integer> teburuId = this.teburuIdForReservation(customerReservationDTO.getStartDateTime(), endTime, customerReservationDTO.getRestaurantId(), customerReservationDTO.getGroupSize());
         if (!(teburuId.size() == 0)) {
-            for (Integer teburu : teburuId) {
-                Reservation reservationTemp = new Reservation(this.teburuController.getTeburu(teburu).get(), customerReservationDTO.getStartDateTime(), endTime, this.customerController.getCustomer(customerReservationDTO.getCustomerId()).get(), customerReservationDTO.getGroupSize());
-                this.reservationRepository.save(reservationTemp);
+            boolean isAuthorized = this.authorizationController.isAuthorized(jwt);
+            if (isAuthorized) {
+                for (Integer teburu : teburuId) {
+                    Reservation reservationTemp = new Reservation(this.teburuController.getTeburu(teburu).get(), customerReservationDTO.getStartDateTime(), endTime, this.customerController.getCustomer(customerReservationDTO.getCustomerId()).get(), customerReservationDTO.getGroupSize());
+                    this.reservationRepository.save(reservationTemp);
+                    return "ok";
+                }
             }
-            return true;
+            return "not-authorized";
         }
-        return false;
+        return "no-seat";
     }
 
 
@@ -66,9 +75,9 @@ public class ReservationController {
      * there is no single Teburu available, the function teburuIdForReservationCombined is called and returns a pair
      * of two tables with the min capacity of groupSize, which are available for reservation.
      *
-     * @param time starting time of the reservation as Timestamp
+     * @param time         starting time of the reservation as Timestamp
      * @param restaurantId id of the restaurnt from the CustomerReservationDTO Object
-     * @param groupSize int group size from the CustomerReservationDTO Object
+     * @param groupSize    int group size from the CustomerReservationDTO Object
      * @return the id of either the first Teburu available or two Teburu with combined capacity of min groupSize
      * available
      */
@@ -98,7 +107,7 @@ public class ReservationController {
     /**
      * Sorts through a list of all tables (Teburu) of a Restaurant to get the tables with the capacity >= groupSize.
      *
-     * @param teburus list of all teburus of a restaurant
+     * @param teburus   list of all teburus of a restaurant
      * @param groupSize int groupSize from the CustomerReservationDTO
      * @return list of all suitable (free) teburuId's of a restaurant for this specific reservation request
      */
@@ -135,8 +144,8 @@ public class ReservationController {
      * Checks if there are two Teburus with a combined capacity of min the required groupSize and if they are are
      * available for reservation. Iterates through every possible combination in a restaurant.
      *
-     * @param time starting time of the reservation as Timestamp
-     * @param timeEnd ending time of the reservation as Timestamp
+     * @param time      starting time of the reservation as Timestamp
+     * @param timeEnd   ending time of the reservation as Timestamp
      * @param groupSize int group size from the CustomerReservationDTO Object
      * @return a list (size: 2) of teburuId's
      */
@@ -176,7 +185,7 @@ public class ReservationController {
      * Iterates through a list of all tables (Teburu) of a Restaurant to get the first pair of tables with a min
      * combined capacity of the required group size.
      *
-     * @param teburus list of all teburus of a restaurant
+     * @param teburus   list of all teburus of a restaurant
      * @param groupSize int groupSize from the CustomerReservationDTO
      * @return pair of two suitable (free) teburuId's (with min combined capacity of groupSize) of a restaurant
      */

@@ -21,12 +21,25 @@ public class CustomerReservationApi {
      */
 
     @PostMapping
-    public ResponseEntity createCustomerReservation(@RequestBody CustomerReservationDTO customerReservationDTO) {
-        boolean success = this.reservationController.createCustomerReservation(customerReservationDTO);
-        if (success) {
+    public ResponseEntity createCustomerReservation(@RequestHeader (name="Authorization") String bearer, @RequestBody CustomerReservationDTO customerReservationDTO) {
+        String[] tokens = bearer.split(" ");
+        String jwt;
+        if (tokens.length > 1 && tokens[1] != null) {
+            jwt = tokens[1];
+        } else return new ResponseEntity<>("something-went-wrong", HttpStatus.BAD_REQUEST);
 
-            return new ResponseEntity<>(HttpStatus.OK);
+        String result = this.reservationController.createCustomerReservation(jwt, customerReservationDTO);
+        switch (result) {
+            case "ok":
+                return new ResponseEntity<>("success", HttpStatus.OK);
+            case "not-authorized":
+                return new ResponseEntity<>("not-authorized", HttpStatus.FORBIDDEN);
+            case "no-seat":
+                return new ResponseEntity<>("no-tables-available", HttpStatus.FORBIDDEN);
+            case "group-size":
+                return new ResponseEntity<>("group-size-too-big", HttpStatus.FORBIDDEN);
+            default:
+                return new ResponseEntity<>("something-went-wrong", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }
