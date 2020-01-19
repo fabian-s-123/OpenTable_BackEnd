@@ -41,8 +41,6 @@ public class ReservationController_v2 {
             listOfTeb.add(this.teburuController.getTeburu(id).get());
         }
 
-
-
         //if one Teb is enough
         Optional<Teburu> tempTeb = listOfTeb.stream()
                 .filter(e -> e.getCapacity() >= cuReDTO.getGroupSize())
@@ -66,28 +64,35 @@ public class ReservationController_v2 {
             }
         }
         //finds all possible combinations
-        List<int[]> listOfPossibleCombinations = new ArrayList<>();
+        Map<Integer, int[]> mapOfPossibleCombinations = new HashMap<>();
         for (int i = 0; i < listTempTeb.size() - 1; i++) {
             Teburu tempTeb1 = listTempTeb.get(i);
-            for (int j = 1; j < listTempTeb.size(); j++) {
+            for (int j = i + 1; j < listTempTeb.size(); j++) {
                 Teburu tempTeb2 = listTempTeb.get(j);
-                if (tempTeb1.getCapacity() + tempTeb2.getCapacity() >= cuReDTO.getGroupSize()) {
-                    listOfPossibleCombinations.add(new int[] {cuReDTO.getGroupSize()-(tempTeb1.getCapacity()+tempTeb2.getCapacity()), tempTeb1.getId(), tempTeb2.getId()});
+                if (!(tempTeb1.equals(tempTeb2)) && tempTeb1.getCapacity() + tempTeb2.getCapacity() >= cuReDTO.getGroupSize()) {
+                    mapOfPossibleCombinations.put(((tempTeb1.getCapacity() + tempTeb2.getCapacity()) - cuReDTO.getGroupSize()), new int[] {tempTeb1.getId(), tempTeb2.getId()});
                 }
             }
         }
-        return "no-seat";
-        //picks the one with the least amount of unused seats
-        listOfPossibleCombinations
 
+        if (mapOfPossibleCombinations.size() == 0) {
+            return "no-seat";
+        }
 
+        int[] teburuIds = mapOfPossibleCombinations //access the values for key
 
-        return "no-seat";
+        Teburu teburu1 = this.teburuController.getTeburu(teburuIds[0]).get();
+        Teburu teburu2 = this. teburuController.getTeburu(teburuIds[1]).get();
+        this.reservationRepository.save(new Reservation(teburu1, cuReDTO.getStartDateTime(), endTime, this.customerController.getCustomer(cuReDTO.getCustomerId()).get(), cuReDTO.getGroupSize()));
+        this.reservationRepository.save(new Reservation(teburu2, cuReDTO.getStartDateTime(), endTime, this.customerController.getCustomer(cuReDTO.getCustomerId()).get(), cuReDTO.getGroupSize()));
+        return "ok";
     }
+
 
     private boolean isStillAvailable(int tebId, Timestamp startTime, Timestamp endTime) {
         return (this.reservationRepository.checkReservationRepo(startTime, endTime, tebId)) == null;
     }
+
 
     private Timestamp getEndTime(Timestamp startTime) {
         long endTimeLong = startTime.getTime() + (3600000 * 2);
