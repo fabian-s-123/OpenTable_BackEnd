@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Controller
 public class ReservationController_v2 {
@@ -28,64 +29,46 @@ public class ReservationController_v2 {
     @Autowired
     private AuthorizationController authorizationController;
 
-    private List<Integer> listOfAllTebId = new LinkedList<>();
-    private List<Teburu> listOfTeb = new LinkedList<>();
+    public String createCustomerReservation(String jwt, CustomerReservationDTO cuReDTO) {
+        boolean isAuthorized = this.authorizationController.isAuthorized(jwt);
+        if (isAuthorized) {
 
-    public String createCustomerReservation(CustomerReservationDTO cuReDTO) {
-        Iterable<Integer> iterableOfAllTebId = teburuController.findAllTeburuByRestaurantId(cuReDTO.getRestaurantId());
-        iterableOfAllTebId.forEach(listOfAllTebId::add);// adding the TebId's to the list
+            //populating the lists of TebId & Teb(Objects)
+            List<Integer> listOfAllTebId = toList(this.teburuController.findAllTeburuByRestaurantId(cuReDTO.getRestaurantId()));
+            List<Teburu> listOfAllTeb = new LinkedList<>();
+            for (Integer id : listOfAllTebId) listOfAllTeb.add(this.teburuController.getTeburu(id).get());
 
-        Timestamp endTime = this.getEndTime(cuReDTO.getStartDateTime());
+            //endTime: startTime + 2 hrs
+            Timestamp endTime = this.getEndTime(cuReDTO.getStartDateTime());
 
-        for (Integer id : listOfAllTebId) {
-            listOfTeb.add(this.teburuController.getTeburu(id).get());
+            //if one Teb holds the capacity required -> make reservation and return
+            Optional<Teburu> tempTeb = listOfAllTeb.stream()
+                    .sorted(Comparator.comparingInt(Teburu::getCapacity))
+                    .filter(teb -> teb.getCapacity() >= cuReDTO.getGroupSize())
+                    .filter(teb -> (teb.getCapacity() - cuReDTO.getGroupSize()) <= 2)
+                    .filter(teb -> this.isStillAvailable(teb.getId(), cuReDTO.getStartDateTime(), endTime))
+                    .findFirst();
+            if (tempTeb.isPresent()) {
+                Reservation reservation = new Reservation(tempTeb.get(), cuReDTO.getStartDateTime(), endTime, this.customerController.getCustomer(cuReDTO.getCustomerId()).get(), cuReDTO.getGroupSize());
+                this.reservationRepository.save(reservation);
+                return "ok";
+            }
+            //else try a combination of two different Teb
+            return combineTebForReservation(cuReDTO, listOfAllTeb, endTime);
         }
+        return "not-authorized";
+    }
 
-        //if one Teb is enough
-        Optional<Teburu> tempTeb = listOfTeb.stream()
-                .filter(e -> e.getCapacity() >= cuReDTO.getGroupSize())
-                .filter(e -> this.isStillAvailable(e.getId(), cuReDTO.getStartDateTime(), endTime))
-                .findFirst();
-        if (tempTeb.isPresent()) {
-            this.reservationRepository.save(new Reservation(tempTeb.get(), cuReDTO.getStartDateTime(), endTime, this.customerController.getCustomer(cuReDTO.getCustomerId()).get(), cuReDTO.getGroupSize()));
-            return "ok";
-        }
 
-        //if more Teb are needed
-        List<Teburu> listTempTeb = listOfTeb.stream()
-                .filter(e -> this.isStillAvailable(e.getId(), cuReDTO.getStartDateTime(), endTime))
-                .sorted(Comparator.comparingInt(Teburu::getCapacity))
+    private <T> List<T> toList(final Iterable<T> iterable) {
+        return StreamSupport.stream(iterable.spliterator(), false)
                 .collect(Collectors.toList());
-        //removes Teb with smallest capacity if this.capacity + Teb with largest capacity < groupSize
-        for (int i = 0; i < listTempTeb.size(); i++) {
-             if ((listTempTeb.get(i).getCapacity() + listTempTeb.get(listTempTeb.size()-1).getCapacity()) < cuReDTO.getGroupSize()) {
-                 listTempTeb.remove(i);
-                 i--;
-            }
-        }
-        //finds all possible combinations
-        Map<Integer, int[]> mapOfPossibleCombinations = new HashMap<>();
-        for (int i = 0; i < listTempTeb.size() - 1; i++) {
-            Teburu tempTeb1 = listTempTeb.get(i);
-            for (int j = i + 1; j < listTempTeb.size(); j++) {
-                Teburu tempTeb2 = listTempTeb.get(j);
-                if (!(tempTeb1.equals(tempTeb2)) && tempTeb1.getCapacity() + tempTeb2.getCapacity() >= cuReDTO.getGroupSize()) {
-                    mapOfPossibleCombinations.put(((tempTeb1.getCapacity() + tempTeb2.getCapacity()) - cuReDTO.getGroupSize()), new int[] {tempTeb1.getId(), tempTeb2.getId()});
-                }
-            }
-        }
+    }
 
-        if (mapOfPossibleCombinations.size() == 0) {
-            return "no-seat";
-        }
 
-        int[] teburuIds = mapOfPossibleCombinations //access the values for key
-
-        Teburu teburu1 = this.teburuController.getTeburu(teburuIds[0]).get();
-        Teburu teburu2 = this. teburuController.getTeburu(teburuIds[1]).get();
-        this.reservationRepository.save(new Reservation(teburu1, cuReDTO.getStartDateTime(), endTime, this.customerController.getCustomer(cuReDTO.getCustomerId()).get(), cuReDTO.getGroupSize()));
-        this.reservationRepository.save(new Reservation(teburu2, cuReDTO.getStartDateTime(), endTime, this.customerController.getCustomer(cuReDTO.getCustomerId()).get(), cuReDTO.getGroupSize()));
-        return "ok";
+    private Timestamp getEndTime(Timestamp startTime) {
+        long endTimeLong = startTime.getTime() + (3600000 * 2);
+        return new Timestamp(endTimeLong);
     }
 
 
@@ -94,8 +77,35 @@ public class ReservationController_v2 {
     }
 
 
-    private Timestamp getEndTime(Timestamp startTime) {
-        long endTimeLong = startTime.getTime() + (3600000 * 2);
-        return new Timestamp(endTimeLong);
+    private String combineTebForReservation(CustomerReservationDTO cuReDTO, List<Teburu> listOfAllTeb, Timestamp endTime) {
+        List<Teburu> listOfTebFiltered = listOfAllTeb.stream()
+                .filter(teb -> this.isStillAvailable(teb.getId(), cuReDTO.getStartDateTime(), endTime))
+                .sorted(Comparator.comparingInt(Teburu::getCapacity))
+                .collect(Collectors.toList());
+
+        //finds all possible combinations of two Teb
+        Map<Integer, int[]> mapOfPossibleCombinations = new HashMap<>();
+        for (int i = 0; i < listOfTebFiltered.size() - 1; i++) {
+            Teburu tempTeb1 = listOfTebFiltered.get(i);
+            for (int j = i + 1; j < listOfTebFiltered.size(); j++) {
+                Teburu tempTeb2 = listOfTebFiltered.get(j);
+                if (!(tempTeb1.equals(tempTeb2)) && tempTeb1.getCapacity() + tempTeb2.getCapacity() >= cuReDTO.getGroupSize()) {
+                    mapOfPossibleCombinations.put(((tempTeb1.getCapacity() + tempTeb2.getCapacity()) - cuReDTO.getGroupSize()), new int[]{tempTeb1.getId(), tempTeb2.getId()});
+                }
+            }
+        }
+        if (mapOfPossibleCombinations.size() == 0) return "no-seat";
+
+        int key = (Integer) mapOfPossibleCombinations.keySet().toArray()[0];    //first map entry holds the one with the smallest amount of wasted space
+        int[] tebIds = mapOfPossibleCombinations.get(key);                      //values assigned tot the first key - the two tebId's required for the reservation
+
+        Teburu teb1 = this.teburuController.getTeburu(tebIds[0]).get();         //Teb 1 for reservation
+        Teburu teb2 = this.teburuController.getTeburu(tebIds[1]).get();         //Teb 2 for reservation
+
+        Reservation reservationTeb1 = new Reservation(teb1, cuReDTO.getStartDateTime(), endTime, this.customerController.getCustomer(cuReDTO.getCustomerId()).get(), cuReDTO.getGroupSize());
+        Reservation reservationTeb2 = new Reservation(teb2, cuReDTO.getStartDateTime(), endTime, this.customerController.getCustomer(cuReDTO.getCustomerId()).get(), cuReDTO.getGroupSize());
+        this.reservationRepository.save(reservationTeb1);
+        this.reservationRepository.save(reservationTeb2);
+        return "ok";
     }
 }
