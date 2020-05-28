@@ -1,0 +1,6 @@
+Aufgabenstellung: Klon des Online-Reservierservices OpenTable
+
+Contributors: fabian-s-123 (speziell im Reservation Tree (von Api bis zu Repo)), elnino07, manzjan, okanshn
+
+Notizen: Aufbau mit Spring Boot (Implementierung nach 
+  DB Zugriff leider nicht mehr verfügbar
